@@ -8,16 +8,24 @@ use Zend\Db\TableGateway\TableGateway;
 use Zend\Feed\PubSubHubbub\Model\Subscription;
 use Zend\Feed\PubSubHubbub\Subscriber;
 
-$dbh          = new \PDO('sqlite:jma-subscriber.sqlite3');
+$dbh          = new \PDO('sqlite:../data/jma-subscriber.sqlite3');
 $connection   = new Connection($dbh);
 $driver       = new Pdo($connection);
 $adapter      = new Adapter($driver);
 $tableGateway = new TableGateway('subscription', $adapter);
 $storage      = new Subscription($tableGateway);
 
+
+echo 'ハブのURL'.PHP_EOL;
+$hubUrl      = trim(fgets(STDIN));
+echo '購読するフィードのURL'.PHP_EOL;
+$topicUrl    = trim(fgets(STDIN));
+echo 'PuSHを受けるURL'.PHP_EOL;
+$callbackUrl = trim(fgets(STDIN));
+
 $subscriber = new Subscriber();
 $subscriber->setStorage($storage);
-$subscriber->addHubUrl('http://alert-hub.appspot.com/subscribe');
-$subscriber->setTopicUrl('http://xml.kishou.go.jp/feed/extra.xml');
-$subscriber->setcallbackUrl('http://push.ping12ms.com');
+$subscriber->addHubUrl($hubUrl);
+$subscriber->setTopicUrl($topicUrl);
+$subscriber->setcallbackUrl($callbackUrl);
 $subscriber->subscribeAll();
